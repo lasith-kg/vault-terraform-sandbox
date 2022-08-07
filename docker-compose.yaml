@@ -9,7 +9,6 @@ services:
         - ./vault/file:/vault/file:rw
         - ./vault/config:/vault/config:r
         - ./vault/logs:/vault/logs:rw
-        - ./vault/policies:/vault/policies:r
     environment:
         - VAULT_ADDR=http://0.0.0.0:8200
     ports:
