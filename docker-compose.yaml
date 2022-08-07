@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  vault:
+    container_name: vault
+    image: vault:latest
+    cap_add:
+      - IPC_LOCK
+    volumes:
+        - ./vault/file:/vault/file:rw
+        - ./vault/config:/vault/config:r
+        - ./vault/logs:/vault/logs:rw
+        - ./vault/policies:/vault/policies:r
+    environment:
+        - VAULT_ADDR=http://0.0.0.0:8200
+    ports:
+      - 8200:8200
+    command: vault server -config=/vault/config/vault.hcl
