@@ -6,11 +6,26 @@ services:
     cap_add:
       - IPC_LOCK
     volumes:
-        - ./vault/file:/vault/file:rw
+        - vault-file:/vault/file:rw
         - ./vault/config:/vault/config:r
         - ./vault/logs:/vault/logs:rw
+        - ./vault/tls:/vault/tls:r
     environment:
-        - VAULT_ADDR=http://0.0.0.0:8200
+        - VAULT_ADDR=https://localhost:8200
+        - VAULT_CAPATH=/vault/tls/ca.pem
+        - VAULT_CLIENT_CERT=/vault/tls/vault.pem
+        - VAULT_CLIENT_KEY=/vault/tls/vault-key.pem
     ports:
       - 8200:8200
     command: vault server -config=/vault/config/vault.hcl
+    depends_on:
+    - tls-certs
+  tls-certs:
+    build:
+      context: ./cfssl
+    volumes:
+      - ./vault/tls:/tmp/tls
+    command: generate /tmp/tls
+
+volumes:
+  vault-file: {}
