@@ -11,4 +11,4 @@ vault-init:
 vault-ssh:
 	docker exec -it vault /bin/sh
 vault-stop:
-	docker compose down
+	docker compose down -v
