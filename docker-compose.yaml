@@ -35,7 +35,7 @@ services:
     volumes:
         - vault-operator-tls:/etc/ssl/vault-operator
         - vault-ca-tls:/etc/ssl/vault-ca
-    command: [ "sleep 1d" ]
+    command: [ "./unseal.sh && sleep 1d" ]
   tls-certs:
     build:
       context: ./cfssl

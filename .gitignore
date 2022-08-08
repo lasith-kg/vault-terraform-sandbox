@@ -1,5 +1,2 @@
 vault/logs
 !vault/logs/.gitkeep
-
-vault/tls
-!vault/tls/.gitkeep
