@@ -9,8 +9,8 @@ services:
       - IPC_LOCK
     volumes:
         - vault-file:/vault/file:rw
-        - ./vault/config:/vault/config:r
-        - ./vault/logs:/vault/logs:rw
+        - ${PWD}/vault/config:/vault/config:r
+        - ${PWD}/vault/logs:/vault/logs:rw
         - vault-node-tls:/etc/ssl/vault-node
         - vault-ca-tls:/etc/ssl/vault-ca
     environment:
@@ -35,7 +35,8 @@ services:
     volumes:
         - vault-operator-tls:/etc/ssl/vault-operator
         - vault-ca-tls:/etc/ssl/vault-ca
-    command: [ "./unseal.sh && sleep 1d" ]
+        - ${PWD}/terraform:/terraform
+    command: [ "./unseal.sh && ./terraform.sh init && sleep 1d" ]
   tls-certs:
     build:
       context: ./cfssl

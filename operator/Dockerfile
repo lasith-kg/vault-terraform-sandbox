@@ -6,6 +6,6 @@ COPY --from=vault:latest /bin/vault /bin/vault
 COPY --from=hashicorp/terraform:latest /bin/terraform /bin/terraform
 
 WORKDIR /scripts
-COPY unseal.sh .
+COPY *.sh .
 
 ENTRYPOINT [ "/bin/sh", "-c" ]
