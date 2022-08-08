@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -l
 set -euo pipefail
 
 if [ -z ${VAULT_CAPATH+x} ]; then echo "FATAL: 🔴 envvar VAULT_CAPATH must be set"; exit 1; fi
@@ -24,4 +24,3 @@ for unseal_token in $(echo "$vault_init" | jq -r '.unseal_keys_b64[]'); do vault
 echo "export VAULT_TOKEN=$vault_root_token" >> ~/.profile
 
 echo "INFO: Root Vault Token: ${vault_root_token:0:7}***"
-echo "INFO: Run \"source ~/.profile\" to load VAULT_TOKEN into shell environment"
