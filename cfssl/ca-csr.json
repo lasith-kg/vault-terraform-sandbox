@@ -1,5 +1,4 @@
 {
-  "hosts": ["cluster.local"],
   "key": {
     "algo": "rsa",
     "size": 2048
