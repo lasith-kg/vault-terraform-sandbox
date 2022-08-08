@@ -1,6 +1,8 @@
 version: "3.9"
 services:
   vault:
+    depends_on:
+    - tls-certs
     container_name: vault
     image: vault:latest
     cap_add:
@@ -9,23 +11,42 @@ services:
         - vault-file:/vault/file:rw
         - ./vault/config:/vault/config:r
         - ./vault/logs:/vault/logs:rw
-        - ./vault/tls:/vault/tls:r
+        - vault-node-tls:/etc/ssl/vault-node
+        - vault-ca-tls:/etc/ssl/vault-ca
     environment:
         - VAULT_ADDR=https://localhost:8200
-        - VAULT_CAPATH=/vault/tls/ca.pem
-        - VAULT_CLIENT_CERT=/vault/tls/vault.pem
-        - VAULT_CLIENT_KEY=/vault/tls/vault-key.pem
+        - VAULT_CAPATH=/etc/ssl/vault-ca/ca.pem
+        - VAULT_CLIENT_CERT=/etc/ssl/vault-node/vault.pem
+        - VAULT_CLIENT_KEY=/etc/ssl/vault-node/vault-key.pem
     ports:
       - 8200:8200
     command: vault server -config=/vault/config/vault.hcl
+  operator:
     depends_on:
     - tls-certs
+    container_name: vault-operator
+    build: 
+      context: ./operator
+    environment:
+        - VAULT_ADDR=https://vault:8200
+        - VAULT_CAPATH=/etc/ssl/vault-ca/ca.pem
+        - VAULT_CLIENT_CERT=/etc/ssl/vault-operator/vault.pem
+        - VAULT_CLIENT_KEY=/etc/ssl/vault-operator/vault-key.pem
+    volumes:
+        - vault-operator-tls:/etc/ssl/vault-operator
+        - vault-ca-tls:/etc/ssl/vault-ca
+    command: [ "sleep 1d" ]
   tls-certs:
     build:
       context: ./cfssl
     volumes:
-      - ./vault/tls:/tmp/tls
-    command: generate /tmp/tls
+      - vault-ca-tls:/tmp/tls/ca
+      - vault-node-tls:/tmp/tls/vault-node
+      - vault-operator-tls:/tmp/tls/vault-operator
+    command: [ "generate", "/tmp/tls" ]
 
 volumes:
   vault-file: {}
+  vault-ca-tls: {}
+  vault-node-tls: {}
+  vault-operator-tls: {}
