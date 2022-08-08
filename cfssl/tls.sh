@@ -40,14 +40,12 @@ if [[ "$ACTION" == "generate" ]]; then
     adduser -S -G vault vault
 
     # Change Permissions of Public Certificates
-    chmod 777 ca/ca.pem
-    chmod 777 vault-node/vault.pem
+    find . -name "*.pem" ! -name '*-key.pem' -type f | xargs | chmod 777
 
-    # Change Vault Node Key Permissions
-    chmod 600 vault-node/vault-key.pem
+    # Change Permissions of Private Keys
+    find . -name "*-key.pem" -type f | xargs | chmod 600
+    
+    # Change Owner of Vault Node Private Key since Vault binary runs as `vault` user
     chown vault:vault vault-node/vault-key.pem
-
-    # Change Vault Operator Key Permissions
-    chmod 600 vault-operator/vault-key.pem
 fi
 
