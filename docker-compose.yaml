@@ -1,16 +1,16 @@
 version: "3.9"
 services:
-  tls-certs:
+  generate-tls-certs:
     build:
       context: ./cfssl
     volumes:
       - vault-ca-tls:/tmp/tls/ca
       - vault-node-tls:/tmp/tls/vault-node
       - vault-operator-tls:/tmp/tls/vault-operator
-    command: [ "generate", "/tmp/tls" ]
+    working_dir: /tmp/tls
   vault:
     depends_on:
-    - tls-certs
+    - generate-tls-certs
     container_name: vault
     image: vault:latest
     cap_add:
@@ -31,7 +31,7 @@ services:
     command: vault server -config=/vault/config/vault.hcl
   operator:
     depends_on:
-    - tls-certs
+    - generate-tls-certs
     container_name: vault-operator
     build: 
       context: ./operator
