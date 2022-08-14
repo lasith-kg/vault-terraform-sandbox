@@ -5,7 +5,7 @@ vault-dev-init: export VAULT_DEV_ROOT_TOKEN = root
 vault-dev-init:
 	docker compose -f docker-compose.dev.yaml up --remove-orphans --build -d
 vault-dev-ssh:
-	docker exec -it vault-dev /bin/sh -l
+	docker exec -it vault-dev-operator /bin/sh -l
 vault-dev-destroy:
 	docker compose -f docker-compose.dev.yaml down
 
