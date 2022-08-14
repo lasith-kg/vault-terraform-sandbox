@@ -1,6 +1,8 @@
 ui = true
 default_lease_ttl = "168h"
 max_lease_ttl = "0h"
+api_addr = "https://127.0.0.1:8200"
+cluster_addr = "https://127.0.0.1:8201"
 
 listener "tcp" {
   tls_disable = false
@@ -10,6 +12,7 @@ listener "tcp" {
   tls_min_version = "tls12"
 }
 
-storage "file" {
+storage "raft" {
   path = "/vault/file"
+  node_id = "node01"
 }
