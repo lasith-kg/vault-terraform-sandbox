@@ -1,15 +1,5 @@
 MAKEFLAGS += --silent
-vault-dev-init: export VAULT_DEV_ROOT_TOKEN = root
 
-# Dev Vault Node
-vault-dev-init:
-	docker compose -f docker-compose.dev.yaml up --remove-orphans --build -d
-vault-dev-ssh:
-	docker exec -it vault-dev-operator /bin/sh -l
-vault-dev-destroy:
-	docker compose -f docker-compose.dev.yaml down
-
-# Pseudo-prod Vault Node
 vault-init:
 	docker compose up --remove-orphans --build -d
 vault-ssh:
@@ -17,7 +7,7 @@ vault-ssh:
 vault-print-root-token:
 	docker exec vault-operator /bin/sh -l -c 'echo $$VAULT_TOKEN'
 vault-ui:
-	open https://localhost:8200
+	open 'https://localhost:8200'
 vault-destroy:
 	docker compose down -v
 	# Clean Terraform Vault State Files
