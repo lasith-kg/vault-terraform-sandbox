@@ -1,2 +1,11 @@
+# Vault logs
 vault/logs
 !vault/logs/.gitkeep
+
+# Local .terraform directories
+terraform/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
