@@ -12,7 +12,7 @@ services:
     depends_on:
     - generate-tls-certs
     container_name: vault
-    image: vault:latest
+    image: hashicorp/vault:latest
     cap_add:
       - IPC_LOCK
     volumes:
