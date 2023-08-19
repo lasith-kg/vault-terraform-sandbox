@@ -1,0 +1,42 @@
+ui = true
+default_lease_ttl = "168h"
+max_lease_ttl = "0h"
+api_addr = "${VAULT_ADDR}"
+cluster_addr = "http://${LOCAL_IPV4}:8201"
+
+listener "tcp" {
+  tls_disable     = false
+  address         = "0.0.0.0:8200"
+  cluster_address = "0.0.0.0:8201"
+  tls_disable     = true
+}
+
+storage "raft" {
+  path                    = "/vault/file"
+  node_id                 = "${NODE_ID}"
+  performance_multiplier  = 1
+
+  retry_join {
+    leader_api_addr = "http://vault-terraform-sandbox-vault-1:8200"
+  }
+  retry_join {
+    leader_api_addr = "http://vault-terraform-sandbox-vault-2:8200"
+  }
+  retry_join {
+    leader_api_addr = "http://vault-terraform-sandbox-vault-3:8200"
+  }
+  retry_join {
+    leader_api_addr = "http://vault-terraform-sandbox-vault-4:8200"
+  }
+  retry_join {
+    leader_api_addr = "http://vault-terraform-sandbox-vault-5:8200"
+  }
+}
+
+seal "transit" {
+   address            = "http://vault-transit:8200"
+   disable_renewal    = "false"
+   token              = "${VAULT_TRANSIT_TOKEN}"
+   key_name           = "unseal_key"
+   mount_path         = "transit/"
+}
