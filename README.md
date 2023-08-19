@@ -15,29 +15,42 @@ sudo xcode-select --install
 * MacOS [[Install Guide](https://docs.docker.com/desktop/install/mac-install/)]
 
 ## Vault
-
+The following commands are to bootstrap a 5 Node, Highly Available, Vault Cluster
+with Integrated Storage as the backend. Additionally, we enable Raft Auto-Pilot 
+to ensure that dead servers are cleaned up appropriately
 ```
 # Bootstrap Single Node Vault Cluster
-make vault-init
+make vault-up
 
-# SSH into Vault Node
-make vault-ssh
+# Scale Up Vault Cluster to 5 Nodes to Enable High Availability
+make vault-scale-up
 
-# Print Root Vault Token
-make vault-print-root-token
+# Apply Base Vault Configuration Through Terraform
+make terraform-init
+make terraform-apply
 
-# Open Vault UI console
+# Get Vault Operator Userpass Credentials
+make vault-operator-creds
+
+# Open Vault UI (http://localhost:8080)
 make vault-ui
 
-# Destroy Vault Cluster + Terraform State Files
-make vault-destroy
+# SSH into Vault Operator Container
+# Within this container you can execute `vault` and `terraform` commands
+#   e.g vault operator raft list-peers
+#   e.g terraform state list
+make vault-operator-ssh
+
+# Deprovision Vault Cluster
+make vault-down
 ```
 
-## Terraform 
+## Terraform
+The following commands execute `terraform` commands inside the `vault-operator` container
 ```
-# Running `terraform init` command
+# Run `terraform init`
 make terraform-init
 
-# Running `terraform apply` command
+# Run `terraform apply`
 make terraform-apply
 ```

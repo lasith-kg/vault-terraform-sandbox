@@ -1,53 +1,61 @@
 version: "3.9"
 services:
-  generate-tls-certs:
+  vault-transit:
     build:
-      context: ./cfssl
-    volumes:
-      - vault-ca-tls:/tmp/tls/ca
-      - vault-node-tls:/tmp/tls/vault-node
-      - vault-operator-tls:/tmp/tls/vault-operator
-    working_dir: /tmp/tls
-  vault:
-    depends_on:
-    - generate-tls-certs
-    container_name: vault
-    image: hashicorp/vault:latest
+      context: vault
     cap_add:
       - IPC_LOCK
     volumes:
-        - vault-file:/vault/file:rw
-        - ${PWD}/vault/config:/vault/config:r
-        - ${PWD}/vault/logs:/vault/logs:rw
-        - vault-node-tls:/etc/ssl/vault-node
-        - vault-ca-tls:/etc/ssl/vault-ca
+        - ${PWD}/vault/config/vault-transit.hcl.template:/vault/config/vault.hcl.template:r
+    command: vault server --dev
     environment:
-        - VAULT_ADDR=https://localhost:8200
-        - VAULT_CAPATH=/etc/ssl/vault-ca/ca.pem
-        - VAULT_CLIENT_CERT=/etc/ssl/vault-node/vault.pem
-        - VAULT_CLIENT_KEY=/etc/ssl/vault-node/vault-key.pem
-    ports:
-      - 8200:8200
-    command: vault server -config=/vault/config/vault.hcl
-  operator:
+      VAULT_ADDR: "http://localhost:8200"
+      VAULT_DEV_ROOT_TOKEN_ID: transit-engine-bypass
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+      VAULT_TOKEN: transit-engine-bypass
+    healthcheck:
+      test: vault read transit/keys/unseal_key
+      interval: "5s"
+  
+  vault:
     depends_on:
-    - generate-tls-certs
-    container_name: vault-operator
-    build: 
-      context: ./operator
-    environment:
-        - VAULT_ADDR=https://vault:8200
-        - VAULT_CAPATH=/etc/ssl/vault-ca/ca.pem
-        - VAULT_CLIENT_CERT=/etc/ssl/vault-operator/vault.pem
-        - VAULT_CLIENT_KEY=/etc/ssl/vault-operator/vault-key.pem
+      vault-transit:
+        condition: service_healthy
+    build:
+      context: vault
+    cap_add:
+      - IPC_LOCK
     volumes:
-        - vault-operator-tls:/etc/ssl/vault-operator
-        - vault-ca-tls:/etc/ssl/vault-ca
-        - ${PWD}/terraform:/terraform
-    command: [ "./unseal.sh && sleep 1d" ]
+        - ${PWD}/vault/config/vault.hcl.template:/vault/config/vault.hcl.template:r
+        - ${PWD}/terraform/policies/vault-operator.hcl:/vault/policies/vault-operator.hcl:r
+    command: vault server -config=/vault/config/vault.hcl
+    deploy:
+      replicas: 1
+    environment:
+      VAULT_ADDR: "http://localhost:8200"
+      VAULT_TRANSIT_TOKEN: "transit-engine-bypass"
+    healthcheck:
+      test: vault read /sys/health
+      interval: "5s"
 
-volumes:
-  vault-file: {}
-  vault-ca-tls: {}
-  vault-node-tls: {}
-  vault-operator-tls: {}
+  vault-operator:
+    depends_on:
+      vault:
+        condition: service_healthy
+    build: 
+      context: operator
+    volumes:
+      - ${PWD}/terraform:/terraform
+    environment:
+      VAULT_ADDR: http://vault:8200
+      TERRAFORM_VAULT_USERNAME: vault-operator
+      TERRAFORM_VAULT_PASSWORD: vault-operator
+
+  vault-ui:
+    depends_on:
+      vault:
+        condition: service_healthy
+    build:
+      context: nginx
+    ports:
+      - "8080:8080"
