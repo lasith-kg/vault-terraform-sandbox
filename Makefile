@@ -14,7 +14,9 @@ vault-operator-ssh:
 	docker compose exec -it vault-operator /bin/sh -l
 vault-operator-creds:
 	docker compose exec vault-operator credentials.sh
-vault-ui:
-	open 'http://localhost:8080'
 vault-down:
 	docker compose down -v
+url := http://localhost:8080
+vault-ui:
+	(open "$(url)" || xdg-open "$(url)") &> /dev/null || \
+		echo "Vist $(url) in browser"
