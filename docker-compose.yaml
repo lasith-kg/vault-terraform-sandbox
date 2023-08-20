@@ -1,26 +1,26 @@
 version: "3.9"
 name: vault-terraform-sandbox
 services:
-  vault-transit:
+  vault-auto-unseal:
     build:
       context: vault
     cap_add:
       - IPC_LOCK
     volumes:
-        - ${PWD}/vault/config/vault-transit.hcl.template:/vault/config/vault.hcl.template:r
+        - ${PWD}/vault/config/vault-auto-unseal.hcl.template:/vault/config/vault.hcl.template:r
     command: vault server --dev
     environment:
       VAULT_ADDR: "http://localhost:8200"
-      VAULT_DEV_ROOT_TOKEN_ID: transit-engine-bypass
+      VAULT_DEV_ROOT_TOKEN_ID: vault-auto-unseal
       VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
-      VAULT_TOKEN: transit-engine-bypass
+      VAULT_TOKEN: vault-auto-unseal
     healthcheck:
       test: vault read transit/keys/unseal_key
       interval: "5s"
   
   vault:
     depends_on:
-      vault-transit:
+      vault-auto-unseal:
         condition: service_healthy
     build:
       context: vault
@@ -34,25 +34,13 @@ services:
       replicas: 1
     environment:
       VAULT_ADDR: "http://localhost:8200"
-      VAULT_TRANSIT_TOKEN: "transit-engine-bypass"
+      VAULT_ADDR_AUTO_UNSEAL: "http://vault-auto-unseal:8200"
+      VAULT_TOKEN_AUTO_UNSEAL: "vault-auto-unseal"
     healthcheck:
       test: vault read /sys/health
       interval: "5s"
 
-  vault-operator:
-    depends_on:
-      vault:
-        condition: service_healthy
-    build: 
-      context: operator
-    volumes:
-      - ${PWD}/terraform:/terraform
-    environment:
-      VAULT_ADDR: http://vault:8200
-      TERRAFORM_VAULT_USERNAME: vault-operator
-      TERRAFORM_VAULT_PASSWORD: vault-operator
-
-  vault-ui:
+  vault-proxy:
     depends_on:
       vault:
         condition: service_healthy
@@ -60,3 +48,19 @@ services:
       context: nginx
     ports:
       - "8080:8080"
+    healthcheck:
+      test: curl -sSf http://localhost:8080/v1/sys/health
+      interval: "5s"
+
+  vault-operator:
+    depends_on:
+      vault-proxy:
+        condition: service_healthy
+    build: 
+      context: operator
+    volumes:
+      - ${PWD}/terraform:/terraform
+    environment:
+      VAULT_ADDR: http://vault-proxy:8080
+      TERRAFORM_VAULT_USERNAME: vault-operator
+      TERRAFORM_VAULT_PASSWORD: vault-operator

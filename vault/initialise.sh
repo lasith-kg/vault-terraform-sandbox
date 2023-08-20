@@ -32,23 +32,22 @@ main() {
 
 unseal_vault() {
     vault_init=$(vault operator init -recovery-shares=5 -recovery-threshold=3 -format=json)
-    VAULT_TOKEN=$(echo "${vault_init}" | jq -r '.root_token')
-    export VAULT_TOKEN
+    VAULT_ROOT_TOKEN=$(echo "${vault_init}" | jq -r '.root_token')
 }
 
 enable_secrets_transit() {
-  VAULT_TOKEN="${VAULT_DEV_ROOT_TOKEN_ID}" vault secrets enable transit
-  VAULT_TOKEN="${VAULT_DEV_ROOT_TOKEN_ID}" vault write -f transit/keys/unseal_key
+    VAULT_TOKEN="${VAULT_DEV_ROOT_TOKEN_ID}" vault secrets enable transit
+    VAULT_TOKEN="${VAULT_DEV_ROOT_TOKEN_ID}" vault write -f transit/keys/unseal_key
 }
 
 enable_auth_userpass() {
-     vault auth enable userpass
-     vault auth tune -listing-visibility unauth userpass/
+    VAULT_TOKEN="${VAULT_ROOT_TOKEN}" vault auth enable userpass
+    VAULT_TOKEN="${VAULT_ROOT_TOKEN}" vault auth tune -listing-visibility unauth userpass/
 }
 
 create_vault_operator_user() {
-    vault policy write vault-operator /vault/policies/vault-operator.hcl
-    vault write auth/userpass/users/vault-operator \
+    VAULT_TOKEN="${VAULT_ROOT_TOKEN}" vault policy write vault-operator /vault/policies/vault-operator.hcl
+    VAULT_TOKEN="${VAULT_ROOT_TOKEN}" vault write auth/userpass/users/vault-operator \
         password=vault-operator \
         policies=vault-operator
 }
