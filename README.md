@@ -1,7 +1,9 @@
 # Vault Terraform Sandbox
 
 ## Prerequisites
+
 ### make
+
 ```
 # Linux
 sudo apt-get update
@@ -10,26 +12,31 @@ sudo apt-get install build-essential
 # MacOS
 sudo xcode-select --install
 ```
+
 ### docker + docker compose
-* Linux [[Install Guide](https://docs.docker.com/desktop/install/linux-install/)]
-* MacOS [[Install Guide](https://docs.docker.com/desktop/install/mac-install/)]
+
+- Linux [[Install Guide](https://docs.docker.com/desktop/install/linux-install/)]
+- MacOS [[Install Guide](https://docs.docker.com/desktop/install/mac-install/)]
 
 ## Vault
+
 The following commands are to bootstrap a 5 Node, Highly Available, Vault Cluster
-with Integrated Storage as the backend. Additionally, we enable Raft Auto-Pilot 
+with Integrated Storage as the backend. Additionally, we enable Raft Auto-Pilot
 to ensure that dead servers are cleaned up appropriately
+
 ```
 # Bootstrap Single Node Vault Cluster
 make vault-up
 
-# Scale Up Vault Cluster to 5 Nodes to Enable High Availability
-make vault-scale-up
+# Enable High Availability by Scaling Up Vault Cluster to 5 Nodes
+make vault-enable-ha
 
-# Apply Base Vault Configuration Through Terraform
+# Apply Raft Autopilot Configuration Through Terraform
 make terraform-init
+make terraform-plan
 make terraform-apply
 
-# Get Vault Operator Userpass Credentials
+# Get Vault Operator `/userpass` Credentials
 make vault-operator-creds
 
 # Open Vault UI (http://localhost:8080)
@@ -46,11 +53,16 @@ make vault-down
 ```
 
 ## Terraform
+
 The following commands execute `terraform` commands inside the `vault-operator` container
+
 ```
 # Run `terraform init`
 make terraform-init
 
-# Run `terraform apply`
+# Run `terraform plan -out=terraform.plan`
+make terraform-plan
+
+# Run `terraform apply -auto-approve terraform.plan`
 make terraform-apply
 ```

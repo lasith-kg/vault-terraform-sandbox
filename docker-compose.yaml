@@ -1,4 +1,5 @@
 version: "3.9"
+name: vault-terraform-sandbox
 services:
   vault-transit:
     build:
