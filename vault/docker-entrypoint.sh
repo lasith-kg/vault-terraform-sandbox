@@ -5,10 +5,10 @@ export LOCAL_IPV4="$(ip addr show eth0 | \
     grep "inet\b" | \
     awk '{print $2}' | \
     cut -d/ -f1)"
-# Node ID will just be the Local IPv4 address of the Docker Container
-# where periods are replaced with hypens
-# e.g 192.168.0.4/20 => 192-168-0-4
-export NODE_ID="$(echo "${LOCAL_IPV4}" | sed 's/\./-/g')"
+
+# Node ID will just be a shortened Container ID hash
+#   e.g bbd84e75e92f
+export NODE_ID="$(hostname)"
 
 # Starting Unseal Process And Detaching It So We Can Start Vault
 initialise.sh &
