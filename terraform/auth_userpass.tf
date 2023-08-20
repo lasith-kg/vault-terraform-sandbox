@@ -19,7 +19,8 @@ resource "vault_generic_endpoint" "vault-operator-user" {
 
   data_json            = <<EOT
 {
-  "policies": ["${vault_policy.vault-operator.name}"]
+  "policies": ["${vault_policy.vault-operator.name}"],
+  "username": "vault-operator"
 }
 EOT
 }

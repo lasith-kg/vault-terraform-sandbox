@@ -11,7 +11,7 @@ export LOCAL_IPV4="$(ip addr show eth0 | \
 export NODE_ID="$(echo "${LOCAL_IPV4}" | sed 's/\./-/g')"
 
 # Starting Unseal Process And Detaching It So We Can Start Vault
-init.sh &
+initialise.sh &
 
 # Generating Vault Config
 envsubst < /vault/config/vault.hcl.template > /vault/config/vault.hcl
