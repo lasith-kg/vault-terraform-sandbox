@@ -29,7 +29,7 @@ to ensure that dead servers are cleaned up appropriately
 make vault-up
 
 # Enable High Availability by Scaling Up Vault Cluster to 5 Nodes
-make vault-enable-ha
+make vault-scale-up
 
 # Apply Raft Autopilot Configuration Through Terraform
 make terraform-init
@@ -66,3 +66,19 @@ make terraform-plan
 # Run `terraform apply -auto-approve terraform.plan`
 make terraform-apply
 ```
+
+# Disaster Simulation
+
+The following commands can be executed to simulate disaster events like a Node being terminated or losing communication with the Vault cluster.
+Once high-availability is enabled, you can opt to either terminate a follower or leader node. The latter option allowing us to witness the leader re-election process.
+```
+# Stop a Follower Node
+make vault-stop-follower
+
+# Stop a Leader Node
+make vault-stop-leader
+
+# Restore Vault Cluster to Healthy State (5 Nodes)
+make vault-scale-up
+```
+

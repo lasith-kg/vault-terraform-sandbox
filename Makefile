@@ -2,7 +2,7 @@ MAKEFLAGS += --silent
 
 vault-up:
 	docker compose up --remove-orphans -d --build
-vault-enable-ha:
+vault-scale-up:
 	docker compose up --scale vault=5 -d --no-recreate
 terraform-init:
 	docker compose exec vault-operator terraform init
@@ -16,7 +16,15 @@ vault-operator-creds:
 	docker compose exec vault-operator credentials.sh
 vault-down:
 	docker compose down -v
+vault-stop-leader:
+	set -euo pipefail; \
+	container_id=`docker compose exec vault-operator get-node.sh leader`; \
+	docker stop $$container_id
+vault-stop-follower:
+	set -euo pipefail; \
+	container_id=`docker compose exec vault-operator get-node.sh follower`; \
+	docker stop $$container_id
 url := http://localhost:8080
 vault-ui:
 	(open "$(url)" || xdg-open "$(url)") &> /dev/null || \
-		echo "Vist $(url) in browser"
+		6vecho "Vist $(url) in browser"
