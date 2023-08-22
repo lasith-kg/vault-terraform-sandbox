@@ -6,6 +6,7 @@ vault/logs
 terraform/.terraform/*
 
 # .tfstate files
+terraform.plan
 *.tfstate
 *.tfstate.*
 .terraform.lock.hcl

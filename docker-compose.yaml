@@ -48,14 +48,8 @@ services:
       context: nginx
     ports:
       - "8080:8080"
-    healthcheck:
-      test: curl -sSf http://localhost:8080/v1/sys/health
-      interval: "5s"
 
   vault-operator:
-    depends_on:
-      vault-proxy:
-        condition: service_healthy
     build: 
       context: operator
     volumes:

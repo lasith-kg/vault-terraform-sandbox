@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function clean_up() {
+clean_up() {
     # Clean Up Terraform State Files
     find /terraform -regex "/terraform/\.*terraform.*" | xargs rm -rf
 }
