@@ -28,7 +28,7 @@ to ensure that dead servers are cleaned up appropriately
 # Bootstrap Single Node Vault Cluster
 make vault-up
 
-# Enable High Availability by Scaling Up Vault Cluster to 5 Nodes
+# Enable High Availability by Scaling Up Vault Cluster to 5 Nodes (Optional)
 make vault-scale-up
 
 # Apply Raft Autopilot Configuration Through Terraform
