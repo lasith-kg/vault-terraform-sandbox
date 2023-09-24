@@ -2,12 +2,24 @@
 
 ## Prerequisites
 
+This sandbox environment is provisioned and managed through an assortment of `docker` commands 
+which means that it can be provisioned by **any** Operating System that supports the `docker` runtime engine: Windows, MacOS, Linux.
+
+> **Note**: Configuring `bash` and `make` on Windows is not as trivial as MacOS and Linux. If you want
+to avoid this hassle, then simply manually execute the corresponding commands from the `Makefile`
+
 ### make
 
 ```
-# Linux
+# Ubuntu
 sudo apt-get update
-sudo apt-get install build-essential
+sudo apt-get install make
+
+# CentOS/Fedora/RHEL
+sudo dnf install make
+
+# Arch Linux
+sudo pacman -S make
 
 # MacOS
 sudo xcode-select --install
