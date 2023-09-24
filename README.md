@@ -13,10 +13,11 @@ sudo apt-get install build-essential
 sudo xcode-select --install
 ```
 
-### docker + docker compose
+### docker
 
-- Linux [[Install Guide](https://docs.docker.com/desktop/install/linux-install/)]
-- MacOS [[Install Guide](https://docs.docker.com/desktop/install/mac-install/)]
+- [Linux](https://docs.docker.com/desktop/install/linux-install/)
+- [MacOS](https://docs.docker.com/desktop/install/mac-install/)
+- [Windows](https://docs.docker.com/desktop/install/windows-install/)
 
 ## Vault
 
