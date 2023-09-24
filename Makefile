@@ -1,4 +1,5 @@
-MAKEFLAGS += --silent
+SHELL := /usr/bin/env bash
+.SHELLFLAGS := -euo pipefail -c
 
 vault-up:
 	docker compose up --remove-orphans -d --build
@@ -17,14 +18,12 @@ vault-operator-creds:
 vault-down:
 	docker compose down -v
 vault-stop-leader:
-	set -euo pipefail; \
 	container_id=`docker compose exec vault-operator get-node.sh leader`; \
 	docker stop $$container_id
 vault-stop-follower:
-	set -euo pipefail; \
 	container_id=`docker compose exec vault-operator get-node.sh follower`; \
 	docker stop $$container_id
-url := http://localhost:8080
+URL := http://localhost:8080
 vault-ui:
-	(open "$(url)" || xdg-open "$(url)") &> /dev/null || \
-		6vecho "Vist $(url) in browser"
+	(open "$(URL)" || xdg-open "$(URL)") &> /dev/null || \
+		echo "Vist $(URL) in browser"
