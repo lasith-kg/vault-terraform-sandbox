@@ -1,4 +1,6 @@
-# Vault Terraform Sandbox
+# vault-terraform-sandbox
+
+![Children Playing in Sandbox With Hashicorp Logo](assets/hero.jpg)
 
 ## Prerequisites
 
