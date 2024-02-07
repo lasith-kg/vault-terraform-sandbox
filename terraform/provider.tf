@@ -1,5 +1,5 @@
 provider "vault" {
-# address = ""      Set by VAULT_ADDR
+# address = ...     Set by VAULT_ADDR
   auth_login_userpass {
 #   username = ""   Set by TERRAFORM_VAULT_USERNAME
 #   password = ""   Set by TERRAFORM_VAULT_PASSWORD
